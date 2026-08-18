@@ -11,13 +11,17 @@ st.title("📝 Form Pendaftaran Peserta")
 st.page_link("app.py", label="**🏠 KEMBALI KE DASHBOARD UTAMA**", use_container_width=True)
 st.divider()
 
-# Koneksi ke database sheet Pendaftaran
+# Koneksi ke database sheet Pendaftaran (Cache 10 menit biar aman dari limit)
+@st.cache_data(ttl=600)
+def load_data():
+    conn = st.connection("gsheets", type=GSheetsConnection)
+    return conn.read(worksheet="Pendaftaran", ttl=0)
+
 conn = st.connection("gsheets", type=GSheetsConnection)
-df_peserta = conn.read(worksheet="Pendaftaran", ttl=600)
+df_peserta = conn.read(worksheet="Pendaftaran", ttl=0)
 
 # Blok form pendaftaran
 with st.form("form_daftar", clear_on_submit=True):
-    nama = st.text_input("Nama Peserta / Nama Tim (Khusus Voli)")
     lomba = st.selectbox("Pilih Kategori Lomba", [
         "Lomba Two Last Man Standing", 
         "Lomba Catwalk", 
@@ -25,18 +29,35 @@ with st.form("form_daftar", clear_on_submit=True):
         "Lomba Karaoke", 
         "Lomba Costum"
     ])
-    kontak = st.text_input("Nomor WhatsApp (Opsional)")
     
-    submit_button = st.form_submit_button(label="Daftarkan Peserta!")
+    # Logika dinamis: Jika Voli, beda form input-nya
+    if lomba == "Lomba Bola Voli":
+        nama_tampil = st.text_input("Nama Tim Voli", placeholder="Contoh: Tim Garuda Merah")
+        # Textarea biar panitia bisa langsung ketik banyak nama pemain ke bawah
+        anggota_tim = st.text_area("Daftar Anggota Tim (Nama-nama pemain)", placeholder="1. Budi (Captain)\n2. Joko\n3. Andi\n4. Rian")
+        kontak = st.text_input("Nomor WhatsApp Penanggung Jawab / Captain")
+    else:
+        nama_tampil = st.text_input("Nama Lengkap Peserta", placeholder="Contoh: Soni Pratama")
+        anggota_tim = "-" # Kosongkan untuk lomba individu
+        kontak = st.text_input("Nomor WhatsApp (Opsional)")
+    
+    submit_button = st.form_submit_button(label="Daftarkan Sekarang!")
 
     if submit_button:
-        if not nama:
-            st.warning("Nama peserta atau nama tim wajib diisi!")
+        if not nama_tampil:
+            st.warning("Nama Peserta / Nama Tim wajib diisi, bro!")
         else:
             waktu_sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Jika Voli, kita gabungkan Nama Tim dan Anggotanya di database
+            if lomba == "Lomba Bola Voli":
+                final_nama = f"[TIM] {nama_tampil} (Anggota: {anggota_tim.replace(chr(10), ', ')})"
+            else:
+                final_nama = nama_tampil
+
             data_baru = pd.DataFrame([{
                 "Waktu Daftar": waktu_sekarang,
-                "Nama Peserta/Tim": nama,
+                "Nama Peserta/Tim": final_nama,
                 "Kategori Lomba": lomba,
                 "Kontak": kontak
             }])
@@ -49,11 +70,11 @@ with st.form("form_daftar", clear_on_submit=True):
             
             # Simpan kembali (update) ke Google Sheets
             conn.update(worksheet="Pendaftaran", data=df_updated)
-            st.success(f"Mantap! {nama} berhasil didaftarkan ke kategori {lomba}.")
+            st.success(f"Mantap! Pendaftaran untuk **{nama_tampil}** berhasil disimpan.")
 
 st.divider()
 
 st.subheader("📋 Daftar Peserta Terbaru")
-# Tampilkan data langsung setelah input berhasil
-df_terbaru = conn.read(worksheet="Pendaftaran", ttl=0)
+# Tampilkan data langsung setelah input berhasil (Gunakan cache 600 detik)
+df_terbaru = conn.read(worksheet="Pendaftaran", ttl=600)
 st.dataframe(df_terbaru, use_container_width=True)
