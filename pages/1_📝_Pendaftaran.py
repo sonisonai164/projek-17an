@@ -11,33 +11,29 @@ st.title("📝 Form Pendaftaran Peserta")
 st.page_link("app.py", label="**🏠 KEMBALI KE DASHBOARD UTAMA**", use_container_width=True)
 st.divider()
 
-# Koneksi ke database sheet Pendaftaran (Cache 10 menit biar aman dari limit)
-@st.cache_data(ttl=600)
-def load_data():
-    conn = st.connection("gsheets", type=GSheetsConnection)
-    return conn.read(worksheet="Pendaftaran", ttl=0)
-
+# Koneksi ke database sheet Pendaftaran
 conn = st.connection("gsheets", type=GSheetsConnection)
 df_peserta = conn.read(worksheet="Pendaftaran", ttl=0)
 
+# --- SELECTBOX DI LUAR FORM (Biar bisa update tampilan secara real-time) ---
+lomba = st.selectbox("Pilih Kategori Lomba", [
+    "Lomba Two Last Man Standing", 
+    "Lomba Catwalk", 
+    "Lomba Bola Voli", 
+    "Lomba Karaoke", 
+    "Lomba Costum"
+])
+
 # Blok form pendaftaran
 with st.form("form_daftar", clear_on_submit=True):
-    lomba = st.selectbox("Pilih Kategori Lomba", [
-        "Lomba Two Last Man Standing", 
-        "Lomba Catwalk", 
-        "Lomba Bola Voli", 
-        "Lomba Karaoke", 
-        "Lomba Costum"
-    ])
     
     # Logika dinamis: Jika Voli, beda form input-nya
     if lomba == "Lomba Bola Voli":
         nama_tampil = st.text_input("Nama Tim Voli", placeholder="Contoh: Tim Garuda Merah")
-        # Textarea biar panitia bisa langsung ketik banyak nama pemain ke bawah
         anggota_tim = st.text_area("Daftar Anggota Tim (Nama-nama pemain)", placeholder="1. Budi (Captain)\n2. Joko\n3. Andi\n4. Rian")
-        kontak = st.text_input("Nomor WhatsApp Penanggung Jawab / Captain")
+        kontak = st.text_input("Nomor WhatsApp (Opsional)")
     else:
-        nama_tampil = st.text_input("Nama Lengkap Peserta", placeholder="Contoh: Soni Pratama")
+        nama_tampil = st.text_input("Nama Lengkap Peserta", placeholder="Contoh: Soni Abbasy")
         anggota_tim = "-" # Kosongkan untuk lomba individu
         kontak = st.text_input("Nomor WhatsApp (Opsional)")
     
@@ -75,6 +71,6 @@ with st.form("form_daftar", clear_on_submit=True):
 st.divider()
 
 st.subheader("📋 Daftar Peserta Terbaru")
-# Tampilkan data langsung setelah input berhasil (Gunakan cache 600 detik)
+# Tampilkan data langsung setelah input berhasil
 df_terbaru = conn.read(worksheet="Pendaftaran", ttl=600)
 st.dataframe(df_terbaru, use_container_width=True)
