@@ -13,7 +13,7 @@ st.divider()
 
 # Koneksi ke database sheet Pendaftaran
 conn = st.connection("gsheets", type=GSheetsConnection)
-df_peserta = conn.read(worksheet="Pendaftaran", ttl=0)
+df_peserta = conn.read(worksheet="Pendaftaran", ttl=600)
 
 # Blok form pendaftaran
 with st.form("form_daftar", clear_on_submit=True):
