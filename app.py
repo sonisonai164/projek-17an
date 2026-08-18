@@ -108,7 +108,7 @@ try:
                 st.info("Belum ada data pertandingan yang masuk.")
                 
     else:
-        st.info("Belum ada peserta yang terdaftar di database. Ayo sebar link pendaftarannya, panitia!")
+        st.info("Belum ada peserta yang terdaftar di database.")
         
 except Exception as e:
     st.warning(f"Menunggu konfigurasi database. Error: {e}")
