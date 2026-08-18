@@ -12,9 +12,9 @@ st.divider()
 
 # Tarik semua data dari database
 conn = st.connection("gsheets", type=GSheetsConnection)
-df_peserta = conn.read(worksheet="Pendaftaran", ttl=0)
-df_skor = conn.read(worksheet="Skor_Angka", ttl=0)
-df_status = conn.read(worksheet="Status_Tanding", ttl=0)
+df_peserta = conn.read(worksheet="Pendaftaran", ttl=600)
+df_skor = conn.read(worksheet="Skor_Angka", ttl=600)
+df_status = conn.read(worksheet="Status_Tanding", ttl=600)
 
 if df_peserta.empty:
     st.warning("Belum ada peserta yang mendaftar di database.")
