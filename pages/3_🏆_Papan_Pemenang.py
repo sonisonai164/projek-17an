@@ -20,8 +20,8 @@ def highlight_juara(baris):
 
 try:
     conn = st.connection("gsheets", type=GSheetsConnection)
-    df_skor = conn.read(worksheet="Skor_Angka", ttl=0)
-    df_status = conn.read(worksheet="Status_Tanding", ttl=0)
+    df_skor = conn.read(worksheet="Skor_Angka", ttl=600)
+    df_status = conn.read(worksheet="Status_Tanding", ttl=600)
     
     st.header("Kategori Penilaian Skor (Juara 1, 2, 3)")
     if not df_skor.empty:
