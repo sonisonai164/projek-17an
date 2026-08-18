@@ -6,8 +6,8 @@ import pandas as pd
 st.set_page_config(page_title="Dashboard 17-an", page_icon="🇮🇩", layout="wide")
 
 # --- HEADER BERALA KEMERDEKAAN ---
-st.markdown("<h1 style='text-align: center; color: #E51111;'>🇮🇩 SEMARAK KEMERDEKAAN RI 🇮🇩</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: center; color: gray;'>Sistem Informasi Manajemen Lomba 17 Agustusan</h4>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #E51111;'>LINTAS SHUTTLE AGUSTUSAN</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: gray;'>Sistem Informasi Lomba 17 Agustusan 2026</h4>", unsafe_allow_html=True)
 st.write("")
 
 # --- TOMBOL NAVIGASI CEPAT ---
