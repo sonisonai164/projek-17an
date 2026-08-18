@@ -114,4 +114,4 @@ except Exception as e:
     st.warning(f"Menunggu konfigurasi database. Error: {e}")
     
 st.divider()
-st.caption("© Dibuat dengan semangat 45 oleh Panitia Lomba.")
+st.caption("© Dibuat dengan semangat 45.")
